@@ -1,4 +1,4 @@
-package com.miharyjoel.book.security;
+package com.miharyjoel.book.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -1,4 +1,4 @@
-package com.miharyjoel.book.security;
+package com.miharyjoel.book.service;
 
 import com.miharyjoel.book.repository.UserRepository;
 import jakarta.transaction.Transactional;
