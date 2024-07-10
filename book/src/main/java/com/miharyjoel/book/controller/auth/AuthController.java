@@ -4,6 +4,7 @@ import com.miharyjoel.book.dto.RegistrationRequest;
 import com.miharyjoel.book.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
+@RequestMapping("auth")
 @Tag(name = "authentication")
 public class AuthController {
 
@@ -23,7 +24,7 @@ public class AuthController {
   @ResponseStatus(HttpStatus.ACCEPTED)
   public ResponseEntity<?> register(
     @RequestBody @Valid RegistrationRequest request
-  ){
+  ) throws MessagingException {
     service.register(request);
     return ResponseEntity.accepted().build();
   };
