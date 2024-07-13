@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
-import java.nio.charset.StandardCharsets;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,12 +33,8 @@ public class EmailService {
     String  activationCode,
     String subject
   ) throws MessagingException {
-  String templateName;
-  if(emailTemplate ==null){
-    templateName = "confim-email";
-  }else {
-    templateName = emailTemplate.name();
-  }
+    String templateName = (emailTemplate != null) ? emailTemplate.getName() : "confirm-email";
+
     MimeMessage mimeMessage = mailSender.createMimeMessage();
     MimeMessageHelper helper = new MimeMessageHelper(
       mimeMessage,
