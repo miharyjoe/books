@@ -2,7 +2,6 @@ package com.miharyjoel.book.controller.auth;
 
 import com.miharyjoel.book.dto.RegistrationRequest;
 import com.miharyjoel.book.service.AuthenticationService;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -19,13 +18,12 @@ public class AuthController {
 
   private final AuthenticationService service;
 
-
   @PostMapping("/register")
   @ResponseStatus(HttpStatus.ACCEPTED)
   public ResponseEntity<?> register(
-    @RequestBody @Valid RegistrationRequest request
+    @Valid @RequestBody RegistrationRequest request
   ) throws MessagingException {
     service.register(request);
     return ResponseEntity.accepted().build();
-  };
+  }
 }
