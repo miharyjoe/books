@@ -1,5 +1,7 @@
 package com.miharyjoel.book.service;
 
+import com.miharyjoel.book.dto.AuthenticationRequest;
+import com.miharyjoel.book.dto.AuthenticationResponse;
 import com.miharyjoel.book.dto.RegistrationRequest;
 import com.miharyjoel.book.model.EmailTemplateName;
 import com.miharyjoel.book.model.Token;
@@ -10,11 +12,14 @@ import com.miharyjoel.book.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -25,6 +30,8 @@ public class AuthenticationService {
   private final PasswordEncoder passwordEncoder;
   private final UserRepository userRepository;
   private final TokenRepository tokenRepository;
+  private final AuthenticationManager authenticationManager;
+  private final JwtService jwtService;
   private final EmailService emailService;
 
   @Value("${application.mailing.frontend.activation-url}")
@@ -84,4 +91,19 @@ public class AuthenticationService {
   }
 
 
+  public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    var auth = authenticationManager.authenticate(
+      new UsernamePasswordAuthenticationToken(
+        request.getEmail(),
+        request.getPassword()
+      )
+    );
+    var claims = new HashMap<String, Object>();
+    var user =( (User) auth.getPrincipal());
+    claims.put("fullname", user.fullName());
+     var jwtToken = jwtService.generateToken(claims, user);
+    return AuthenticationResponse.builder()
+      .token(jwtToken)
+      .build();
+  }
 }
