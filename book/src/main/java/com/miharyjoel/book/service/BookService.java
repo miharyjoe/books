@@ -1,10 +1,12 @@
 package com.miharyjoel.book.service;
 
 import com.miharyjoel.book.dto.BookRequest;
+import com.miharyjoel.book.dto.BookResponse;
 import com.miharyjoel.book.dto.mapper.BookMapper;
 import com.miharyjoel.book.model.Book;
 import com.miharyjoel.book.model.User;
 import com.miharyjoel.book.repository.BookRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -23,4 +25,9 @@ public class BookService {
     return bookRepository.save(book).getId();
   }
 
+  public BookResponse findById(Long bookId) {
+    return bookRepository.findById(bookId)
+      .map(bookMapper::toBookResponse)
+      .orElseThrow(() -> new EntityNotFoundException("No book found with the Id : "+ bookId));
+  }
 }
