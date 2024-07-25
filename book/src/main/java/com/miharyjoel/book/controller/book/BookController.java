@@ -1,16 +1,14 @@
 package com.miharyjoel.book.controller.book;
 
 import com.miharyjoel.book.dto.BookRequest;
+import com.miharyjoel.book.dto.BookResponse;
 import com.miharyjoel.book.service.BookService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,4 +26,10 @@ public class BookController {
   return ResponseEntity.ok(bookService.save(request, connecetedUser));
   }
 
+  @GetMapping("{book-id}")
+  public ResponseEntity<BookResponse> findBookById(
+    @PathVariable("book-id") Long bookId
+  ){
+    return ResponseEntity.ok(bookService.findById(bookId));
+  }
 }
