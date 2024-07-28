@@ -2,6 +2,7 @@ package com.miharyjoel.book.service;
 
 import com.miharyjoel.book.dto.BookRequest;
 import com.miharyjoel.book.dto.BookResponse;
+import com.miharyjoel.book.dto.BookSpecification;
 import com.miharyjoel.book.dto.PageResponse;
 import com.miharyjoel.book.dto.mapper.BookMapper;
 import com.miharyjoel.book.model.Book;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.miharyjoel.book.dto.BookSpecification.withOwnerId;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +46,25 @@ public class BookService {
   public PageResponse<BookResponse> findAllBooks(int page, int size, Authentication connectedUser) {
     User user = ((User) connectedUser.getPrincipal());
     Pageable pageable = PageRequest.of(page,size, Sort.by("createdDate").descending());
-    Page<Book> books = bookRepository.findAllDisplayableBoos(pageable, user.getId());
+    Page<Book> books = bookRepository.findAllDisplayableBooks(pageable, user.getId());
+    List<BookResponse> bookResponse = books.stream()
+      .map(bookMapper::toBookResponse)
+      .toList();
+    return new PageResponse<>(
+      bookResponse,
+      books.getNumber(),
+      books.getSize(),
+      books.getTotalElements(),
+      books.getTotalPages(),
+      books.isFirst(),
+      books.isLast()
+    );
+  }
+
+  public PageResponse<BookResponse> findAllBooksByOwner(int page, int size, Authentication connectedUser) {
+    User user = ((User) connectedUser.getPrincipal());
+    Pageable pageable = PageRequest.of(page,size, Sort.by("createdDate").descending());
+    Page<Book> books = bookRepository.findAll(withOwnerId(user.getId()), pageable);
     List<BookResponse> bookResponse = books.stream()
       .map(bookMapper::toBookResponse)
       .toList();
