@@ -2,7 +2,9 @@ package com.miharyjoel.book.dto.mapper;
 
 import com.miharyjoel.book.dto.BookRequest;
 import com.miharyjoel.book.dto.BookResponse;
+import com.miharyjoel.book.dto.BorrowedBookResponse;
 import com.miharyjoel.book.model.Book;
+import com.miharyjoel.book.model.BookTransactionHistory;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,6 +34,18 @@ public class BookMapper {
       .owner(book.getOwner().fullName())
       // Todo : implement cover book
       //.cover()
+      .build();
+  }
+
+  public BorrowedBookResponse toBorrowedBookResponse(BookTransactionHistory history) {
+    return BorrowedBookResponse.builder()
+      .id(history.getId())
+      .title(history.getBook().getTitle())
+      .authorName(history.getBook().getAuthorName())
+      .isbn(history.getBook().getIsbn())
+      .rate(history.getBook().getRate())
+      .returned(history.isReturned())
+      .returnedApproved(history.isReturnApproved())
       .build();
   }
 }
