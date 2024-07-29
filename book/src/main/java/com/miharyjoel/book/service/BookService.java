@@ -1,13 +1,12 @@
 package com.miharyjoel.book.service;
 
-import com.miharyjoel.book.dto.BookRequest;
-import com.miharyjoel.book.dto.BookResponse;
-import com.miharyjoel.book.dto.BookSpecification;
-import com.miharyjoel.book.dto.PageResponse;
+import com.miharyjoel.book.dto.*;
 import com.miharyjoel.book.dto.mapper.BookMapper;
 import com.miharyjoel.book.model.Book;
+import com.miharyjoel.book.model.BookTransactionHistory;
 import com.miharyjoel.book.model.User;
 import com.miharyjoel.book.repository.BookRepository;
+import com.miharyjoel.book.repository.BookTransactionHistoryRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,6 +26,7 @@ import static com.miharyjoel.book.dto.BookSpecification.withOwnerId;
 public class BookService {
 
   private final BookRepository bookRepository;
+  private final BookTransactionHistoryRepository transactionHistoryRepository;
   private final BookMapper bookMapper;
 
   public Long save(BookRequest request, Authentication connectedUser) {
@@ -76,6 +76,24 @@ public class BookService {
       books.getTotalPages(),
       books.isFirst(),
       books.isLast()
+    );
+  }
+
+  public PageResponse<BorrowedBookResponse> findAllBorrowedBooks(int page, int size, Authentication connectedUser) {
+    User user = ((User) connectedUser.getPrincipal());
+    Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+    Page<BookTransactionHistory> allBorrowedBook = transactionHistoryRepository.findAllBorrowedBooks(pageable, user.getId() );
+    List<BorrowedBookResponse> bookResponse = allBorrowedBook.stream()
+      .map(bookMapper::toBorrowedBookResponse)
+      .toList();
+    return new PageResponse<>(
+      bookResponse,
+      allBorrowedBook.getNumber(),
+      allBorrowedBook.getSize(),
+      allBorrowedBook.getTotalElements(),
+      allBorrowedBook.getTotalPages(),
+      allBorrowedBook.isFirst(),
+      allBorrowedBook.isLast()
     );
   }
 }
