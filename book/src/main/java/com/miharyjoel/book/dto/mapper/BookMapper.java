@@ -3,6 +3,7 @@ package com.miharyjoel.book.dto.mapper;
 import com.miharyjoel.book.dto.BookRequest;
 import com.miharyjoel.book.dto.BookResponse;
 import com.miharyjoel.book.dto.BorrowedBookResponse;
+import com.miharyjoel.book.dto.FileUtils;
 import com.miharyjoel.book.model.Book;
 import com.miharyjoel.book.model.BookTransactionHistory;
 import org.springframework.stereotype.Service;
@@ -32,8 +33,7 @@ public class BookMapper {
       .archived(book.isArchived())
       .shareable(book.isShareable())
       .owner(book.getOwner().fullName())
-      // Todo : implement cover book
-      //.cover()
+      .cover(FileUtils.readFileFromLocation(book.getBookCover()))
       .build();
   }
 
