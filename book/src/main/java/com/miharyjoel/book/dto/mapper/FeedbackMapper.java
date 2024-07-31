@@ -1,9 +1,12 @@
 package com.miharyjoel.book.dto.mapper;
 
 import com.miharyjoel.book.dto.FeedbackRequest;
+import com.miharyjoel.book.dto.FeedbackResponse;
 import com.miharyjoel.book.model.Book;
 import com.miharyjoel.book.model.Feedback;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class FeedbackMapper {
@@ -17,5 +20,13 @@ public class FeedbackMapper {
         .shareable(false)
         .build())
       .build();
+  }
+
+  public FeedbackResponse toFeedbackResponse(Feedback feedback, Long id) {
+      return FeedbackResponse.builder()
+        .note(feedback.getNote())
+        .comment(feedback.getComment())
+        .ownFeedback(Objects.equals(feedback.getCreatedBy(), id))
+        .build();
   }
 }
