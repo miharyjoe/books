@@ -1,5 +1,6 @@
 package com.miharyjoel.book.service;
 
+import com.miharyjoel.book.Exception.OperationNotPermittedException;
 import com.miharyjoel.book.dto.*;
 import com.miharyjoel.book.dto.mapper.BookMapper;
 import com.miharyjoel.book.model.Book;
@@ -17,7 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 import static com.miharyjoel.book.dto.BookSpecification.withOwnerId;
 
@@ -113,5 +114,17 @@ public class BookService {
       allBorrowedBook.isFirst(),
       allBorrowedBook.isLast()
     );
+  }
+
+  public Long updateShareableStatus(Long bookId, Authentication connectedUser) {
+    Book book = bookRepository.findById(bookId)
+      .orElseThrow(() -> new EntityNotFoundException("No book found with the ID: " + bookId));
+    User user = ((User) connectedUser.getPrincipal());
+    if(!Objects.equals(book.getOwner().getBooks(), user.getBooks())){
+      throw new OperationNotPermittedException("You can not update books shareable satus");
+    }
+    book.setShareable(!book.isShareable());
+    bookRepository.save(book);
+    return bookId;
   }
 }
