@@ -5,12 +5,14 @@ import com.miharyjoel.book.dto.BookResponse;
 import com.miharyjoel.book.dto.BorrowedBookResponse;
 import com.miharyjoel.book.dto.PageResponse;
 import com.miharyjoel.book.service.BookService;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -109,6 +111,17 @@ public class BookController {
     Authentication connectedUser
   ){
     return ResponseEntity.ok(bookService.approveReturnBorrowBook(bookId, connectedUser));
+  }
+
+  @PostMapping(value = "/cover/{book_id}", consumes = "multipart/form-data")
+  public ResponseEntity<?> uploadBookCoverPicture(
+    @PathVariable("book_id") Long bookId,
+    @Parameter()
+    @RequestPart("file") MultipartFile file,
+    Authentication connectedUser
+  ){
+    bookService.uploadBookCoverPicture(file, connectedUser, bookId);
+  return ResponseEntity.accepted().build();
   }
 
 }
